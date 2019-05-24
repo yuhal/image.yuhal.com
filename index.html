@@ -18,20 +18,123 @@
         <p>Powered by Qiniu and Theme by Baguettebox © 2019 HaI</p>
         </div>
         <script type="text/javascript">
+
+            //配置参数
+            var appid = 'wxbb9a70d10651829b',
+                appsercet = 'f6c32350257a1fdcb4eccaf33ff22cb4',
+                mobile = '15736736889',
+                timestamp=Math.round(new Date().getTime()/1000),
+                nonce = MathRand(),
+                bucket = 'yuhal-picture',
+                authentication,
+                accesstoken,
+                uid,
+                sign;
+
+            //请求地址
+            var sign_url = 'https://api.yuhal.com/v1/sign/index',
+                token_url = 'https://api.yuhal.com/v1/token/token',
+                authentication_url = 'https://api.yuhal.com/v1/authentication/index',
+                bucket_url = 'https://api.yuhal.com/qiniu/bucket/'+bucket;
+
             $(function(){   
+
+                //获取签名
                 $.ajax({
                     type: "GET",
-                    url: "https://www.yuhal.com/api/listImage/yuhal-picture",
+                    url: sign_url,
                     dataType: "json",
+                    data: {
+                        appid:appid,
+                        appsercet:appsercet,
+                        mobile:mobile,
+                        timestamp:timestamp,
+                        nonce:nonce
+                    },
                     async : false,
                     success: function(data){
                         // console.log(data);
-                        var html = '';
-                        $.each(data.list, function(i, info){
-                            var sort = i+1;
-                            html += '<a href="'+info+'" title="第'+sort+'张图片"><img src="'+info+'"></a>';
-                        });
-                        $('.gallery').html(html);
+                        if(data.code==200){
+                            sign = data.data.info;
+                        }else{
+                            alert('sign error!');
+                        }
+                       
+                    }
+                });
+
+                //获取token
+                $.ajax({
+                    type: "POST",
+                    url: token_url,
+                    dataType: "json",
+                    data: {
+                        appid:appid,
+                        mobile:mobile,
+                        timestamp:timestamp,
+                        nonce:nonce,
+                        sign:sign,
+                    },
+                    async : false,
+                    success: function(data){
+                        // console.log(data);
+                        if(data.code==200){
+                            accesstoken = data.data.access_token;
+                            uid = data.data.client.uid;
+                        }else{
+                            alert('token error!');
+                        }
+                       
+                    }
+                });
+
+                //获取authentication
+                $.ajax({
+                    type: "GET",
+                    url: authentication_url,
+                    dataType: "json",
+                    data: {
+                        appid:appid,
+                        uid:uid,
+                        accesstoken:accesstoken,
+                    },
+                    async : false,
+                    success: function(data){
+                        // console.log(data);
+                        if(data.code==200){
+                            authentication = data.data.authentication;
+                        }else{
+                            alert('authentication error!');
+                        }
+                       
+                    }
+                });
+
+                //获取仓库下的图片
+                $.ajax({
+                    type: "GET",
+                    url: bucket_url,
+                    // headers: {'Authentication':authentication},
+                    dataType: "json",
+                    data: {
+                        marker:'',
+                        prefix:bucket,
+                        limit:30,
+                        authentication:authentication,
+                    },
+                    async : false,
+                    success: function(data){
+                        // console.log(data);
+                        if(data.code==200){
+                            var html = '';
+                            $.each(data.data[0].items, function(i, info){
+                                var sort = i+1;
+                                html += '<a href="'+info.key+'" title="第'+sort+'张图片"><img src="'+info.key+'"></a>';
+                            });
+                            $('.gallery').html(html);    
+                        }else{
+                            alert('bucket error!');
+                        }
                     }
                 });
                 
@@ -39,6 +142,17 @@
                     animation: 'fadeIn',
                 });
             })
+
+            //生成随机数
+            function MathRand() 
+            { 
+                var Num=""; 
+                for(var i=0;i<6;i++) 
+                { 
+                Num+=Math.floor(Math.random()*10); 
+                } 
+                return Num;
+            }
         </script>
 
     </body>
