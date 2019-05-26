@@ -26,16 +26,33 @@ h1, h2, h3 .gallery {
 }
 
 .gallery img {
-    height: 100%;
+    display: block;
+    cursor: pointer;
+    margin: auto;
+    position: absolute;
+    top: -100%;
+    right: -100%;
+    bottom: -100%;
+    left: -100%;
+    width: auto;
+    max-width: none;
+    min-height: 100%;
+    min-width: 105%;
+    height: 105%;
 }
 
 .gallery a {
-    width: 240px;
-    height: 180px;
-    display: inline-block;
-    overflow: hidden;
-    margin: 4px 6px;
     box-shadow: 0 0 4px -1px #000;
+    margin: 4px 6px;
+    display: inline-block;
+    width: 15rem;
+    height: 15rem;
+    position: relative;
+    display: inline-block;
+    vertical-align: bottom;
+    font-size: 1.4rem;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .baguetteBoxOne {

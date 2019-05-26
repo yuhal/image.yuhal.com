@@ -5,13 +5,14 @@
         <title>HaI丶Picture</title>
 
         <link rel="stylesheet" href="https://picture.yuhal.com/baguettebox.min.css"/>
-        <link rel="stylesheet" href="https://picture.yuhal.com/style.css"/>
+        <link rel="stylesheet" href="style.css"/>
         <script src="https://picture.yuhal.com/jquery-3.1.1.min.js"></script>
         <script src="https://picture.yuhal.com/baguettebox.min.js"></script>
+        <script src="../jQuery8load/js/modernizr.custom.js"></script>
     </head>
     <body>
 
-        <div class="baguetteBoxOne gallery">
+        <div id="grid" class="baguetteBoxOne gallery">
             
         </div>
         <div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei';">
@@ -119,7 +120,7 @@
                     data: {
                         marker:'',
                         prefix:bucket,
-                        limit:30,
+                        limit:10,
                         authentication:authentication,
                     },
                     async : false,
@@ -129,7 +130,8 @@
                             var html = '';
                             $.each(data.data[0].items, function(i, info){
                                 var sort = i+1;
-                                html += '<a href="'+info.key+'" title="第'+sort+'张图片"><img src="'+info.key+'"></a>';
+                                info.key = 'https://picture.yuhal.com/'+info.key;
+                                html += '<a href="'+info.key+'" title="第'+sort+'张图片"><img class="scrollLoading" src="'+info.key+'"></a>';
                             });
                             $('.gallery').html(html);    
                         }else{
@@ -153,6 +155,17 @@
                 } 
                 return Num;
             }
+        </script>
+        <script src="../jQuery8load/js/masonry.pkgd.min.js"></script> 
+        <script src="../jQuery8load/js/imagesloaded.js"></script> 
+        <script src="../jQuery8load/js/classie.js"></script> 
+        <script src="../jQuery8load/js/AnimOnScroll.js"></script>
+        <script>
+            // new AnimOnScroll(document.getElementById('grid'), {
+            //     minDuration: 0.4,
+            //     maxDuration: 0.7,
+            //     viewportFactor: 0.2
+            // });
         </script>
 
     </body>
