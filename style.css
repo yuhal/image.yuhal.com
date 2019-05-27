@@ -15,6 +15,40 @@ h1, h2, h3 .gallery {
 }
 
 
+.gallery li {
+    list-style: none;
+    opacity: 0;
+}
+
+.gallery li.shown,
+.no-js .gallery li,
+.no-cssanimations .gallery li {
+    opacity: 1;
+}
+
+.gallery li a,
+.gallery li img {
+    outline: none;
+    border: none;
+    display: block;
+    max-width: 100%;
+}
+
+.gallery.effect-1 li.animate {
+    -webkit-animation: fadeIn 0.65s ease forwards;
+    animation: fadeIn 0.65s ease forwards;
+}
+
+@-webkit-keyframes fadeIn {
+    0% { }
+    100% { opacity: 1; }
+}
+
+@keyframes fadeIn {
+    0% { }
+    100% { opacity: 1; }
+}
+
 
 .gallery:after {
     content: '';
