@@ -61,7 +61,7 @@
                         if(data.code==200){
                             sign = data.data.info;
                         }else{
-                            alert('sign error!');
+                            console.log('签名错误!');
                         }
                        
                     }
@@ -86,7 +86,7 @@
                             accesstoken = data.data.access_token;
                             uid = data.data.client.uid;
                         }else{
-                            alert('token error!');
+                            console.log('token错误!');
                         }
                        
                     }
@@ -108,45 +108,46 @@
                         if(data.code==200){
                             authentication = data.data.authentication;
                         }else{
-                            alert('authentication error!');
+                            console.log('身份验证错误!');
                         }
                        
                     }
                 });
 
-                
-
-
-                
-
                 //获取仓库下的图片
-                    $.ajax({
-                        type: "GET",
-                        url: bucket_url,
-                        dataType: "json",
-                        data: {
-                            marker:'',
-                            prefix:bucket,
-                            // limit:100,
-                            authentication:authentication,
-                        },
-                        async : false,
-                        success: function(data){
-                            // console.log(data);
-                            if(data.code==200){
-                                var html = '';
+                $.ajax({
+                    type: "GET",
+                    url: bucket_url,
+                    dataType: "json",
+                    data: {
+                        marker:'',
+                        prefix:bucket,
+                        // limit:100,
+                        authentication:authentication,
+                    },
+                    async : false,
+                    success: function(data){
+                        // console.log(data);
+                        if(data.code==200){
+                            var html = '';
+                            if(data.data[0].items.length>0){
+                                console.log(data.data[0].items);
                                 $.each(data.data[0].items, function(i, info){
                                     var sort = i+1;
                                     info.key = 'https://picture.yuhal.com/'+info.key;
                                     html += '<li><a href="'+info.key+'" title="第'+sort+'张图片"><img src="'+info.key+'"></a></li>';
-                                });
+                                });  
                                 $('.gallery').append(html);   
-                                LazyLoading();
+                                LazyLoading();  
                             }else{
-                                alert('bucket error!');
-                            }
+                                html = '<center>暂无图片!</center>';
+                                $('.gallery').html(html);
+                            }  
+                        }else{
+                            console.log('存储仓库错误!');
                         }
-                    });
+                    }
+                });
 
                 baguetteBox.run('.baguetteBoxOne', {
                     animation: 'fadeIn',
