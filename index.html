@@ -4,11 +4,11 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>HaI丶Picture</title>
 
-        <link rel="stylesheet" href="https://picture.yuhal.com/baguettebox.min.css"/>
+        <link rel="stylesheet" href="baguettebox.min.css"/>
         <link rel="stylesheet" href="style.css"/>
-        <script src="https://picture.yuhal.com/jquery-3.1.1.min.js"></script>
-        <script src="https://picture.yuhal.com/baguettebox.min.js"></script>
-        <script src="../jQuery8/js/modernizr.custom.js"></script>
+        <script src="jquery-3.1.1.min.js"></script>
+        <script src="baguettebox.min.js"></script>
+        <script src="modernizr.custom.js"></script>
 
     </head>
     <body>
@@ -18,10 +18,10 @@
         <p>Powered by Qiniu and Theme by Baguettebox & AnimOnScroll © 2019 HaI</p>
         </div>
         
-        <script src="../jQuery8/js/masonry.pkgd.min.js"></script> 
-        <script src="../jQuery8/js/imagesloaded.js"></script> 
-        <script src="../jQuery8/js/classie.js"></script> 
-        <script src="../jQuery8/js/AnimOnScroll.js"></script>
+        <script src="masonry.pkgd.min.js"></script> 
+        <script src="imagesloaded.js"></script> 
+        <script src="classie.js"></script> 
+        <script src="AnimOnScroll.js"></script>
         <script type="text/javascript">
             //配置参数
             var appid = 'wxbb9a70d10651829b',
@@ -148,10 +148,11 @@
                         }
                     }
                 });
-
+                
                 baguetteBox.run('.baguetteBoxOne', {
                     animation: 'fadeIn',
                 });
+                
             })
 
 
@@ -159,8 +160,9 @@
             
             //滚动加载
             // var marker = '';//上次返回标记
-            // var limit = 16;//每次加载个数
+            // var limit = 12;//每次加载个数
             // var i = 1; //设置当前页数，全局变量
+            // var totalPage = 3; //设置总页数
             // $(function () {
             //     //根据页数读取数据
             //     function getData(pagenumber) {
@@ -179,10 +181,12 @@
             //             success: function(data){
             //                 // console.log(data);
             //                 if(data.code==200){
-            //                     insertDiv(data.data[0].items);
+            //                     insertDiv(data.data[0].items,pagenumber);
+
             //                     if(data.data[0].marker){
             //                         marker = data.data[0].marker
             //                     }
+
             //                 }else{
             //                     alert('bucket error!');
             //                 }
@@ -192,17 +196,24 @@
 
             //     //初始化加载第一页数据
             //     getData(1);
-
             //     //生成数据html，append到div中
-            //     function insertDiv(json) {
+            //     function insertDiv(json,pagenumber) {
             //         var html = '';
+
             //         $.each(json, function(i, info){
-            //             var sort = i+1;
+            //             var sort = i+limit*(pagenumber-1)+1;
+            //             console.log(sort)
             //             info.key = 'https://picture.yuhal.com/'+info.key;
             //             html += '<li><a href="'+info.key+'" title="第'+sort+'张图片"><img src="'+info.key+'"></a></li>';
             //         });
             //         $('.gallery').append(html);   
+
             //         LazyLoading();
+            //         baguetteBox.run('.baguetteBoxOne', {
+            //             animation: 'fadeIn',
+            //         });
+                    
+
             //     }
 
             //     //==============核心代码=============
@@ -213,7 +224,7 @@
             //         var scrollT = $(window).scrollTop(); //滚动条top 
             //         var aa = (pageH - winH - scrollT) / winH;
             //         if (aa < 0.02) {//0.02是个参数
-            //             if (i % 10 === 0) {//10页做一次停顿！
+            //             if (i % totalPage === 0) {//10页做一次停顿！
             //                 getData(i);
             //                 $(window).unbind('scroll');
             //                 // $("#btn_NextPage").show();
@@ -228,7 +239,6 @@
             //     $(window).scroll(scrollHandler);
             //     //==============核心代码=============
 
-                
             // });
 
             //生成随机数
