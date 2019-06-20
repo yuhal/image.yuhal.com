@@ -13,19 +13,7 @@
 
     </head>
     <body>
-        <header>
-            <nav class="codrops-demos">
-                <a href="index.html">Demo 1</a>
-                <a class="current-demo" href="index2.html">Demo 2</a>
-                <a href="index3.html">Demo 3</a>
-                <a href="index4.html">Demo 4</a>
-                <a href="index5.html">Demo 5</a>
-                <a href="index6.html">Demo 6</a>
-                <a href="index7.html">Demo 7</a>
-                <a href="index8.html">Demo 8</a>
-            </nav>
-        </header>
-        <div id="gallery" class="baguetteBoxOne gallery effect-1"> 
+        <div id="gallery"> 
         </div>
         <div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei';">
         <p>Powered by Qiniu and Theme by Baguettebox & AnimOnScroll © 2019 HaI</p>
@@ -52,10 +40,13 @@
             var sign_url = 'https://api.yuhal.com/v1/sign/index',
                 token_url = 'https://api.yuhal.com/v1/token/token',
                 authentication_url = 'https://api.yuhal.com/v1/authentication/index',
-                bucket_url = 'https://api.yuhal.com/qiniu/bucket/'+bucket;
+                bucket_url = 'https://api.yuhal.com/v2/bucket/'+bucket;
 
             $(function(){   
-                
+                //根据星期切换样式
+                var day = new Date().getDay();  
+                $('#gallery').addClass("baguetteBoxOne gallery effect-"+day);   
+
                 //获取签名
                 $.ajax({
                     type: "GET",
