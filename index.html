@@ -139,7 +139,7 @@
                                 $.each(data.data[0].items, function(i, info){
                                     var sort = i+1;
                                     info.key = 'https://picture.yuhal.com/'+info.key;
-                                    html += '<li><a href="'+info.key+'" title="第'+sort+'张图片"><img src="'+info.key+'"></a></li>';
+                                    html += '<li><a href="'+info.key+'" title="第'+sort+'张图片"><img src="'+info.key+'?imageMogr2/auto-orient/thumbnail/600x600!/blur/1x0/quality/75"></a></li>';
                                 });  
                                 $('.gallery').append(html);   
                                 LazyLoading();  
