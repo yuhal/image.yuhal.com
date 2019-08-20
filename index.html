@@ -13,6 +13,50 @@
 
     </head>
     <body>
+
+        <div class="container">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 509.88 346.42">
+            <title>自行车加载器</title>
+            <text class="loading" x="140" y="50">LOADING...</text>
+            <circle cx="381.99" cy="217.27" r="57" fill="none"/>
+            <rect x="205.49" y="100.77" width="130" height="10" fill="#ffffff" stroke="#ffffff" stroke-miterlimit="10"/>
+            <rect x="335.99" y="59.27" width="10" height="58.84" fill="#ffffff" stroke="#ffffff" stroke-miterlimit="10"/>
+            <rect x="687.32" y="367.76" width="9.47" height="129.52" transform="translate(32.95 -610.41) rotate(39.23)" fill="#ffffff" stroke="#ffffff" stroke-miterlimit="10"/>
+            <rect x="615.67" y="333.48" width="9.89" height="150.8" transform="translate(-499.92 -29.09) rotate(-20.33)" fill="#ffffff" stroke="#ffffff" stroke-miterlimit="10"/>
+            <rect x="346.9" y="59.27" width="36.97" height="10" fill="#2a2d2c" stroke="#2a2d2c" stroke-miterlimit="10"/>
+            <path d="M779.38,329a30.2,30.2,0,0,1,17.28,6.85,22.87,22.87,0,0,1,5.81,7.44,18.46,18.46,0,0,1,1.81,9.24,17.69,17.69,0,0,1-3,8.57A20.36,20.36,0,0,1,795,367a25.93,25.93,0,0,1-15.65,3.57,24.5,24.5,0,0,0,14-5.78,17,17,0,0,0,4.28-5.73,12.81,12.81,0,0,0,1.1-6.53,13.55,13.55,0,0,0-7-10A20.68,20.68,0,0,0,779.38,340Z" transform="translate(-396.51 -270.23)" fill="#2a2d2c"/>
+            <rect id="seat" x="165.99" y="58.27" width="63.01" height="10" fill="#2a2d2c" stroke="#2a2d2c" stroke-miterlimit="10"/>
+            <g id="back-wheel">
+              <circle id="wheel" cx="130.99" cy="217.27" r="80" fill="none" stroke="#2a2d2c" stroke-miterlimit="10" stroke-width="6"/>
+              <circle id="wheel-ring" cx="130.99" cy="217.27" r="76" fill="none" stroke="#9ab0a6" stroke-miterlimit="10" stroke-width="3"/>
+              <circle id="wheel-center" cx="130.99" cy="217.27" r="9.64" fill="#2a2d2c" stroke="#2a2d2c" stroke-miterlimit="10"/>
+              <g id="back-light">
+                <rect x="116.32" y="156.9" width="28.67" height="9.57" rx="4.79" fill="#fff"/>
+                <rect x="117.32" y="266.9" width="28.67" height="9.57" rx="4.79" fill="#fff" stroke="#fff" stroke-miterlimit="10"/>
+              </g>
+            </g>
+            <g id="center">
+              <circle id="center-2" data-name="center" cx="251.49" cy="211.77" r="22" fill="#9edac0" stroke="#2a2d2c" stroke-miterlimit="10" stroke-width="2"/>
+              <circle id="center-3" data-name="center" cx="251.49" cy="211.77" r="17" fill="#9edac0" stroke="#2a2d2c" stroke-miterlimit="10" stroke-width="2"/>
+              <circle id="center-4" data-name="center" cx="251.49" cy="211.77" r="12" fill="#9edac0" stroke="#2a2d2c" stroke-miterlimit="10" stroke-width="2"/>
+              <circle id="center-5" data-name="center" cx="251.49" cy="211.77" r="7" fill="#9edac0" stroke="#2a2d2c" stroke-miterlimit="10" stroke-width="2"/>
+            </g>
+            <g id="front-wheel" data-name="front-wheel">
+              <circle id="wheel-2" data-name="wheel" cx="383.99" cy="217.27" r="80" fill="none" stroke="#2a2d2c" stroke-miterlimit="10" stroke-width="6"/>
+              <circle id="wheel-ring-2" data-name="wheel-ring" cx="383.99" cy="217.27" r="76" fill="none" stroke="#9ab0a6" stroke-miterlimit="10" stroke-width="3"/>
+              <circle id="wheel-center-2" data-name="wheel-center" cx="383.99" cy="217.27" r="9.64" fill="#2a2d2c" stroke="#2a2d2c" stroke-miterlimit="10"/>
+              <g id="front-light" data-name="front-light">
+                <rect x="369.32" y="156.9" width="28.67" height="9.57" rx="4.79" fill="#fff"/>
+                <rect x="370.32" y="266.9" width="28.67" height="9.57" rx="4.79" fill="#fff" stroke="#fff" stroke-miterlimit="10"/>
+              </g>
+            </g>
+            <rect x="752.93" y="376.48" width="10.69" height="107.09" transform="translate(-502.34 44.78) rotate(-21.98)" fill="#ffffff" stroke="#ffffff" stroke-miterlimit="10"/>
+            <rect x="563.96" y="358.94" width="9.86" height="132.52" transform="translate(-62.18 -515.41) rotate(33.94)" fill="#ffffff" stroke="#ffffff" stroke-miterlimit="10"/>
+          </svg>
+        </div>
+        <script src='TweenMax.min.js'></script> 
+        <script src="script.js"></script>
+
         <div id="gallery"> 
         </div>
         <div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei';">
@@ -130,6 +174,10 @@
                         authentication:authentication,
                     },
                     async : false,
+                    beforeSend: function(){
+                        $('.container').show();
+                        $('.gallery').hide();
+                    },
                     success: function(data){
                         // console.log(data);
                         if(data.code==200){
@@ -138,11 +186,14 @@
                                 console.log(data.data[0].items);
                                 $.each(data.data[0].items, function(i, info){
                                     var sort = i+1;
-                                    info.key = 'https://picture.yuhal.com/'+info.key;
-                                    html += '<li><a href="'+info.key+'" title="第'+sort+'张图片"><img src="'+info.key+'?imageMogr2/auto-orient/thumbnail/600x600!/blur/1x0/quality/75"></a></li>';
+                                    href = 'https://picture.yuhal.com/'+info.key;
+                                    html += '<li><a href="'+href+'" title="第'+sort+'张图片 '+info.key+'"><img src="'+href+'?imageMogr2/auto-orient/thumbnail/600x600!/blur/1x0/quality/75"></a></li>';
                                 });  
                                 $('.gallery').append(html);   
+                                
                                 LazyLoading();  
+                                $('.gallery').show();
+                                $('.container').hide();
                             }else{
                                 html = '<center>暂无图片!</center>';
                                 $('.gallery').html(html);
