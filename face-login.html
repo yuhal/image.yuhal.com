@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zxx">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>face-login</title>
+    <!-- CSS -->
+    <style>
+        .loader {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9998;
+            text-align: center;
+        }
+
+        .plane-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+        }
+    </style>
+    <script src="jquery-3.1.1.min.js"></script>
+    <!-- Js -->
+    <script type="text/javascript">
+    $.ajaxSetup({headers: {"X-CSRFToken": '{{ csrf_token }}'}});
+    </script>
+    <!--
+    --- Head Part - Use Jquery anywhere at page.
+    --- http://writing.colin-gourlay.com/safely-using-ready-before-including-jquery/
+    -->
+</head>
+<body >
+
+<div id="app">
+<div class="page parallel">
+    <div class="d-flex row">
+        <div class="col-md-12  height-full accent-3 align-self-center text-center" data-bg-repeat="false"
+             data-bg-possition="center">
+            <video  id="video" autoplay style="width:100%;height:100%;opacity: 1"></video>
+            <!--描绘video截图-->
+            <canvas style="display: none;" id="canvas" width="480" height="320"></canvas>
+        </div>
+    </div>
+</div>
+<!-- /.right-sidebar -->
+<!-- Add the sidebar's background. This div must be placed
+         immediately after the control sidebar -->
+</div>
+<!--/#app -->
+<script src="app.js"></script>
+<!--
+--- Footer Part - Use Jquery anywhere at page.
+--- http://writing.colin-gourlay.com/safely-using-ready-before-including-jquery/
+-->
+<!-- 实现人脸拍照并传向后台 -->
+<script>
+    var video = document.getElementById('video');
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+    function getUserMediaToPhoto(constraints,success,error) {
+        if(navigator.mediaDevices.getUserMedia){
+            //最新标准API
+            navigator.mediaDevices.getUserMedia(constraints).then(success).catch(error);
+        }else if (navigator.webkitGetUserMedia) {
+            //webkit核心浏览器
+            navigator.webkitGetUserMedia(constraints,success,error);
+        }else if(navigator.mozGetUserMedia){
+            //firefox浏览器
+            navigator.mozGetUserMedia(constraints,success,error);
+        }else if(navigator.getUserMedia){
+            //旧版API
+            navigator.getUserMedia(constraints,success,error);
+        }
+    }
+    //成功回调函数
+    function success(stream){
+        // 兼容webkit核心浏览器
+        var CompatibleURL = window.URL || window.webkitURL;
+        //将视频流转化为video的源
+        try{
+          video.src = CompatibleURL.createObjectURL(stream);
+        }catch(e){
+          video.srcObject = stream;
+        }
+        //将视频绘制到canvas上
+        postFace()
+    }
+    function error(error) {
+        console.log('访问用户媒体失败：',error.name,error.message);
+    }
+    function postFace() {
+        setTimeout(function () {
+            context.drawImage(video,0,0,480,320);
+            img=canvas.toDataURL('image/jpg')
+            // 获取完整的base64编码
+            // img=img.split(',')[1]
+            // 将照片以base64用ajax传到后台
+            $.post({
+                url:'https://api.yuhal.com/v2/bucket/yuhal-temp',
+                data:{
+                    uri:img,
+                    authentication:'1 d3hiYjlhNzBkMTA2NTE4MjliOkY5d29ObUhHUVBsZzE3YXRyQTkzcHZYNHhxMDhNTzZTOjE=',
+                    _method:'put'
+                },
+                success:function (callback) {
+                    callback = $.parseJSON(callback)
+                    if(callback.code==200){
+                        //得到上传图片去做比对
+                        faceCheck(callback.data.fileName)
+                    }
+                },
+                error:function (callback) {
+                    postFace()
+                }
+            })
+        },300)
+    }
+    function faceCheck(uri){
+        $.get({
+            url:'https://api.yuhal.com/v2/face',
+            data:{
+                uri:'http://pwydkeqx9.bkt.clouddn.com/'+uri,
+                authentication:'1 d3hiYjlhNzBkMTA2NTE4MjliOkY5d29ObUhHUVBsZzE3YXRyQTkzcHZYNHhxMDhNTzZTOjE='
+            },
+            success:function (callback) {
+                callback = $.parseJSON(callback)
+                if(callback.code==200){
+                    var score = callback.data.info
+                    if(score>=80){
+                        window.location.href = "/";
+                    }else{
+                        postFace()
+                    }
+                }else{
+                    alert(callback.data.info)
+                }
+            },
+            error:function (callback) {
+                postFace()
+            }
+        })
+    }
+    if(navigator.mediaDevices.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.getUserMedia){
+        getUserMediaToPhoto({video:{width:480,height:320}},success,error);
+    }else{
+        alert('你的浏览器不支持访问用户媒体设备');
+    }
+</script>
+</body>
+</html>
+
