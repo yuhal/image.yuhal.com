@@ -136,6 +136,10 @@
                 timestamp=Math.round(new Date().getTime()/1000),
                 nonce = MathRand(),
                 bucket = 'yuhal-picture',
+                video = document.getElementById('video'),
+                canvas = document.getElementById('canvas'),
+                context = canvas.getContext('2d'),
+                mediaStreamTrack,
                 authentication,
                 accesstoken,
                 uid,
@@ -146,9 +150,12 @@
                 token_url = 'https://api.yuhal.com/v1/token/token',
                 authentication_url = 'https://api.yuhal.com/v1/authentication/index',
                 put_buck_url = 'https://api.yuhal.com/v2/bucket/yuhal-temp',
-                bucket_url = 'https://api.yuhal.com/v2/bucket/'+bucket;
+                bucket_url = 'https://api.yuhal.com/v2/bucket/'+bucket,
+                face_url = 'https://api.yuhal.com/v2/face';
 
             $(function(){   
+
+                $('.container').hide();
 
                 //根据日期去余切换样式
                 var date = new Date().getDate();
@@ -177,7 +184,7 @@
                         }
                     },
                     error: function(data){
-                        $('.container').show();
+                        // $('.container').show();
                         return 
                     }
                 });
@@ -205,7 +212,7 @@
                         }
                     },
                     error: function(data){
-                        $('.container').show();
+                        // $('.container').show();
                         return 
                     }
                 });
@@ -230,22 +237,22 @@
                         }
                     },
                     error: function(data){
-                        $('.container').show();
+                        // $('.container').show();
                         return 
                     }
                 });
 
                 // 实现人脸拍照并传向后台
-                var video = document.getElementById('video');
-                var canvas = document.getElementById('canvas');
-                var context = canvas.getContext('2d');
-                
                 if(navigator.mediaDevices.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.getUserMedia){
                     getUserMediaToPhoto({video:{width:480,height:320}},success,error);
                 }else{
                     alert('你的浏览器不支持访问用户媒体设备');
                 }
+                
+            })
 
+            //获取仓库下的图片
+            function getBucketImage(){
                 //获取仓库下的图片
                 $.ajax({
                     type: "GET",
@@ -295,8 +302,7 @@
                 baguetteBox.run('.baguetteBoxOne', {
                     animation: 'fadeIn',
                 });
-                
-            })
+            }
 
             function getUserMediaToPhoto(constraints,success,error) {
                 if(navigator.mediaDevices.getUserMedia){
@@ -311,6 +317,8 @@
                 }else if(navigator.getUserMedia){
                     //旧版API
                     navigator.getUserMedia(constraints,success,error);
+                }else{
+                    console.log(2);
                 }
             }
             //成功回调函数
@@ -319,6 +327,7 @@
                 var CompatibleURL = window.URL || window.webkitURL;
                 //将视频流转化为video的源
                 try{
+                  mediaStreamTrack = stream;
                   video.src = CompatibleURL.createObjectURL(stream);
                 }catch(e){
                   video.srcObject = stream;
@@ -327,6 +336,8 @@
                 postFace()
             }
             function error(error) {
+                $("#app").hide();
+                $('.container').show();
                 console.log('访问用户媒体失败：',error.name,error.message);
             }
             function postFace() {
@@ -356,7 +367,7 @@
             }
             function faceCheck(uri){
                 $.get({
-                    url:'https://api.yuhal.com/v2/face',
+                    url:face_url,
                     data:{
                         uri:'http://pwydkeqx9.bkt.clouddn.com/'+uri,
                         authentication:authentication
@@ -365,8 +376,11 @@
                         callback = $.parseJSON(callback)
                         if(callback.code==200){
                             var score = callback.data.info
-                            if(score>=80){
-                                window.location.href = "/";
+                            if(score>=60){
+                                //关闭摄像头
+                                mediaStreamTrack.getTracks()[0].stop(); 
+                                $("#app").hide();
+                                getBucketImage();
                             }else{
                                 postFace()
                             }
