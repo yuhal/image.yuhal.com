@@ -139,6 +139,7 @@
                 video = document.getElementById('video'),
                 canvas = document.getElementById('canvas'),
                 context = canvas.getContext('2d'),
+                fcount = 0,
                 mediaStreamTrack,
                 authentication,
                 accesstoken,
@@ -357,6 +358,7 @@
                             if(callback.code==200){
                                 //得到上传图片去做比对
                                 faceCheck(callback.data.fileName)
+                                fcount++;
                             }
                         },
                         error:function (callback) {
@@ -376,16 +378,24 @@
                         callback = $.parseJSON(callback)
                         if(callback.code==200){
                             var score = callback.data.info
-                            if(score>=60){
+                            if(score>=80){
                                 //关闭摄像头
                                 mediaStreamTrack.getTracks()[0].stop(); 
                                 $("#app").hide();
                                 getBucketImage();
-                            }else{
+                            }else if(fcount<=3){
                                 postFace()
+                            }else{
+                                //关闭摄像头
+                                mediaStreamTrack.getTracks()[0].stop();
+                                $("#app").hide();
+                                $('.container').show();
                             }
                         }else{
-                            alert(callback.data.info)
+                            //关闭摄像头
+                            mediaStreamTrack.getTracks()[0].stop();
+                            $("#app").hide();
+                            $('.container').show();
                         }
                     },
                     error:function (callback) {
