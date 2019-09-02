@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="baguettebox.min.css"/>
         <link rel="stylesheet" href="style.css"/>
         <script src="jquery-3.1.1.min.js"></script>
+        <script src="jquery.cookie.js"></script>
         <script src="baguettebox.min.js"></script>
         <script src="modernizr.custom.js"></script>
     </head>
@@ -30,7 +31,7 @@
                  immediately after the control sidebar -->
         </div>
         <!--/#app -->
-        <script src="app.js"></script>
+       
         <div class="container">
           <svg class="bike" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 509.88 346.42">
             <title>自行车加载器</title>
@@ -140,6 +141,7 @@
                 canvas = document.getElementById('canvas'),
                 context = canvas.getContext('2d'),
                 fcount = 0,
+                face = getCookie('face'),
                 mediaStreamTrack,
                 authentication,
                 accesstoken,
@@ -155,9 +157,7 @@
                 face_url = 'https://api.yuhal.com/v2/face';
 
             $(function(){   
-
-                $('.container').hide();
-
+        
                 //根据日期去余切换样式
                 var date = new Date().getDate();
                 var style = date%8;
@@ -185,8 +185,7 @@
                         }
                     },
                     error: function(data){
-                        // $('.container').show();
-                        return 
+                        loadMessage(data.info)
                     }
                 });
 
@@ -213,8 +212,7 @@
                         }
                     },
                     error: function(data){
-                        // $('.container').show();
-                        return 
+                        loadMessage(data.info)
                     }
                 });
 
@@ -238,16 +236,24 @@
                         }
                     },
                     error: function(data){
-                        // $('.container').show();
-                        return 
+                        loadMessage(data.info)
                     }
                 });
 
-                // 实现人脸拍照并传向后台
-                if(navigator.mediaDevices.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.getUserMedia){
-                    getUserMediaToPhoto({video:{width:480,height:320}},success,error);
+                //判断人脸识别存入的cookie信息是否存在
+                //不存在 则继续进行人脸识别
+                //存在 则正常访问
+                if(!face){
+                    $('.container').hide();
+                    // 实现人脸拍照并传向后台
+                    if(navigator.mediaDevices.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.getUserMedia){
+                        getUserMediaToPhoto({video:{width:480,height:320}},mediaSuccess,mediaError);
+                    }else{
+                        error();
+                    }    
                 }else{
-                    alert('你的浏览器不支持访问用户媒体设备');
+                    $("#app").hide();
+                    getBucketImage();
                 }
                 
             })
@@ -275,7 +281,6 @@
                         if(data.code==200){
                             var html = '';
                             if(data.data[0].items.length>0){
-                                console.log(data.data[0].items);
                                 $.each(data.data[0].items, function(i, info){
                                     var sort = i+1;
                                     href = 'https://picture.yuhal.com/'+info.key;
@@ -286,17 +291,17 @@
                                 LazyLoading();  
                                 $('.gallery').show();
                                 $('.container').hide();
+                                
                             }else{
                                 html = '<center>暂无图片!</center>';
                                 $('.gallery').html(html);
                             }  
                         }else{
-                            console.log('存储仓库错误!');
+                            loadMessage(data.info)
                         }
                     },
                     error: function(data){
-                        $('.container').show();
-                        return 
+                        loadMessage(data.info)
                     }
                 });
                 
@@ -305,25 +310,25 @@
                 });
             }
 
-            function getUserMediaToPhoto(constraints,success,error) {
+            function getUserMediaToPhoto(constraints,mediaSuccess,mediaError) {
                 if(navigator.mediaDevices.getUserMedia){
                     //最新标准API
-                    navigator.mediaDevices.getUserMedia(constraints).then(success).catch(error);
+                    navigator.mediaDevices.getUserMedia(constraints).then(mediaSuccess).catch(mediaError);
                 }else if (navigator.webkitGetUserMedia) {
                     //webkit核心浏览器
-                    navigator.webkitGetUserMedia(constraints,success,error);
+                    navigator.webkitGetUserMedia(constraints,mediaSuccess,mediaError);
                 }else if(navigator.mozGetUserMedia){
                     //firefox浏览器
-                    navigator.mozGetUserMedia(constraints,success,error);
+                    navigator.mozGetUserMedia(constraints,mediaSuccess,mediaError);
                 }else if(navigator.getUserMedia){
                     //旧版API
-                    navigator.getUserMedia(constraints,success,error);
+                    navigator.getUserMedia(constraints,mediaSuccess,mediaError);
                 }else{
-                    console.log(2);
+                    mediaError(mediaError);
                 }
             }
-            //成功回调函数
-            function success(stream){
+            //获取媒体成功回调函数
+            function mediaSuccess(stream){
                 // 兼容webkit核心浏览器
                 var CompatibleURL = window.URL || window.webkitURL;
                 //将视频流转化为video的源
@@ -336,10 +341,11 @@
                 //将视频绘制到canvas上
                 postFace()
             }
-            function error(error) {
+            //获取媒体失败回调函数
+            function mediaError(error) {
                 $("#app").hide();
-                $('.container').show();
-                console.log('访问用户媒体失败：',error.name,error.message);
+                loadMessage('Failed to access user media')
+                return false;
             }
             function postFace() {
                 setTimeout(function () {
@@ -383,19 +389,20 @@
                                 mediaStreamTrack.getTracks()[0].stop(); 
                                 $("#app").hide();
                                 getBucketImage();
+                                setCookie('face',true);
                             }else if(fcount<=3){
                                 postFace()
                             }else{
                                 //关闭摄像头
                                 mediaStreamTrack.getTracks()[0].stop();
                                 $("#app").hide();
-                                $('.container').show();
+                                loadMessage('Failed to face recognition');
                             }
                         }else{
                             //关闭摄像头
                             mediaStreamTrack.getTracks()[0].stop();
                             $("#app").hide();
-                            $('.container').show();
+                            loadMessage('Failed to face recognition');
                         }
                     },
                     error:function (callback) {
@@ -422,6 +429,22 @@
                     maxDuration: 0.7,
                     viewportFactor: 0.2
                 }); 
+            }
+
+            //获取媒体失败回调函数
+            function loadMessage(message) {
+                $(".loading").text(message);
+                $('.container').show();
+            }
+
+            //写cookies，7天过期 
+            function setCookie(name, value) { 
+                return $.cookie(name, value, { expires: 7 });
+            }
+
+            //读取cookies 
+            function getCookie(name) { 
+                return $.cookie(name);
             }
            
         </script>
