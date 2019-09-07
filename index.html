@@ -130,6 +130,9 @@
             }
         </script>
         <script type="text/javascript">
+            //人脸识别开关 本地调试设置true
+            // setCookie('face',true);
+
             //配置参数
             var appid = 'wxbb9a70d10651829b',
                 appsercet = 'f6c32350257a1fdcb4eccaf33ff22cb4',
@@ -157,7 +160,12 @@
                 face_url = 'https://api.yuhal.com/v2/face';
 
             $(function(){   
-        
+                var mobile_flag = isMobile(); // true为手机端，false为PC端
+                if(mobile_flag){
+                    loadMessage('Mobile Web not supported');
+                    return false;
+                }
+
                 //根据日期去余切换样式
                 var date = new Date().getDate();
                 var style = date%8;
@@ -259,7 +267,7 @@
             })
 
             //获取仓库下的图片
-            function getBucketImage(){
+            function getBucketImage(init=false){
                 //获取仓库下的图片
                 $.ajax({
                     type: "GET",
@@ -281,17 +289,21 @@
                         if(data.code==200){
                             var html = '';
                             if(data.data[0].items.length>0){
+                                var sort = 0;
                                 $.each(data.data[0].items, function(i, info){
-                                    var sort = i+1;
+                                    sort = i+1;
                                     href = 'https://picture.yuhal.com/'+info.key;
                                     html += '<li><a href="'+href+'" title="第'+sort+'张图片 '+info.key+'"><img src="'+href+'?imageMogr2/auto-orient/thumbnail/600x600!/interlace/1/blur/1x0/quality/30|imageslim"></a></li>';
                                 });  
-                                $('.gallery').append(html);   
-                                
-                                LazyLoading();  
-                                $('.gallery').show();
-                                $('.container').hide();
-                                
+                                $('.gallery').append(html);  
+
+                                var init_time = 500;
+                                if(init){
+                                    init_time = sort*6;
+                                }
+                                setTimeout(function () {
+                                    LazyLoading();  
+                                },init_time)
                             }else{
                                 html = '<center>暂无图片!</center>';
                                 $('.gallery').html(html);
@@ -384,11 +396,11 @@
                         callback = $.parseJSON(callback)
                         if(callback.code==200){
                             var score = callback.data.info
-                            if(score>=80){
+                            if(score>=70){
                                 //关闭摄像头
                                 mediaStreamTrack.getTracks()[0].stop(); 
                                 $("#app").hide();
-                                getBucketImage();
+                                getBucketImage(true);
                                 setCookie('face',true);
                             }else if(fcount<=3){
                                 postFace()
@@ -429,12 +441,15 @@
                     maxDuration: 0.7,
                     viewportFactor: 0.2
                 }); 
+                $('.gallery').show();
+                $('.container').hide();
             }
 
             //获取媒体失败回调函数
             function loadMessage(message) {
                 $(".loading").text(message);
                 $('.container').show();
+                return false;
             }
 
             //写cookies，7天过期 
@@ -445,6 +460,27 @@
             //读取cookies 
             function getCookie(name) { 
                 return $.cookie(name);
+            }
+
+            //判断访问类型是电脑还是手机
+            function isMobile() {
+                var userAgentInfo = navigator.userAgent;
+                var mobileAgents = [ "Android", "iPhone", "SymbianOS", "Windows Phone", "iPad","iPod"];
+                var mobile_flag = false;
+                //根据userAgent判断是否是手机
+                for (var v = 0; v < mobileAgents.length; v++) {
+                    if (userAgentInfo.indexOf(mobileAgents[v]) > 0) {
+                        mobile_flag = true;
+                        break;
+                    }
+                }
+                var screen_width = window.screen.width;
+                var screen_height = window.screen.height;    
+                //根据屏幕分辨率判断是否是手机
+                if(screen_width < 500 && screen_height < 800){
+                    mobile_flag = true;
+                }
+                return mobile_flag;
             }
            
         </script>
