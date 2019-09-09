@@ -14,7 +14,6 @@
         <script src="modernizr.custom.js"></script>
     </head>
     <body>
-        <div class="top-box"></div>
         <div id="app">
         <div class="page parallel">
             <div class="d-flex row">
@@ -88,50 +87,24 @@
         <script src="classie.js"></script> 
         <script src="AnimOnScroll.js"></script>
         <script type="text/javascript">
-            //回到顶部效果
-            window.onload = function(){
-                var obtn = document.getElementById('return_top');  //获取回到顶部按钮的ID
-                var clientHeight = document.documentElement.clientHeight;   //获取可视区域的高度
-                var timer = null; //定义一个定时器
-                var isTop = true; //定义一个布尔值，用于判断是否到达顶部
-            
-                window.onscroll = function(){         //滚动条滚动事件
-            
-                    //获取滚动条的滚动高度
-                    var osTop = document.documentElement.scrollTop || document.body.scrollTop; 
-            
-                    if(osTop >= clientHeight){  //如果滚动高度大于可视区域高度，则显示回到顶部按钮
-                            obtn.style.display = 'block';
-                    }else{         //否则隐藏
-                        obtn.style.display = 'none';
+            //滚动超过一屏幕应该显示，否则消失
+            var pagelookheight = document.documentElement.clientHeight;
+            $(function () {
+                $(window).scroll(function(){
+                    if ($(window).scrollTop()>pagelookheight){
+                        $("#return_top").fadeIn(500);
+                    }else{
+                        $("#return_top").fadeOut(500);
                     }
-            
-                    //主要用于判断当 点击回到顶部按钮后 滚动条在回滚过程中，若手动滚动滚动条，则清除定时器
-                    if(!isTop){     
-                        clearInterval(timer);
-                    }
-                    isTop = false;
-                }
-
-                obtn.onclick = function(){    //回到顶部按钮点击事件
-                    //设置一个定时器
-                    timer = setInterval(function(){
-                        //获取滚动条的滚动高度
-                        var osTop = document.documentElement.scrollTop || document.body.scrollTop;
-                        //用于设置速度差，产生缓动的效果
-                        var speed = Math.floor(-osTop / 6);
-                        document.documentElement.scrollTop = document.body.scrollTop = osTop + speed;
-                        isTop =true;  //用于阻止滚动事件清除定时器
-                        if(osTop == 0){
-                            clearInterval(timer);
-                        }
-                    },30);
-                }
-            }
+                });
+                //当点击跳转链接后，回到页面顶部位置
+                $("#return_top").click(function(){
+                    // 此处加入finish防止多次点击回顶部或者回底部多次触发动画的bug,也可以使用stop()来替换finish()
+                    $("html,body").stop().animate({"scrollTop":"0px"},1500);
+                });
+            });
         </script>
         <script type="text/javascript">
-            //人脸识别开关 本地调试设置true
-            // setCookie('face',true);
 
             //配置参数
             var appid = 'wxbb9a70d10651829b',
@@ -144,7 +117,9 @@
                 canvas = document.getElementById('canvas'),
                 context = canvas.getContext('2d'),
                 fcount = 0,
-                face = getCookie('face'),
+                //人脸识别开关 本地调试设置true
+                face = true,
+                // face = getCookie('face'),
                 mediaStreamTrack,
                 authentication,
                 accesstoken,
