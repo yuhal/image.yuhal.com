@@ -74,7 +74,7 @@
         <script src='TweenMax.min.js'></script> 
         <script src="script.js"></script>
 
-        <div id="gallery"> 
+        <div id="gallery" class="baguetteBoxOne gallery effect-1"> 
         </div>
         <button id="return_top" class="baguetteBox-button">
             <svg width="60" height="44"><polyline points="50 30 30 10 10 30" stroke="rgba(255,255,255,0.5)" stroke-width="4" stroke-linecap="butt" fill="none" stroke-linejoin="round"></polyline></svg>
@@ -140,11 +140,6 @@
                     loadMessage('Mobile Web not supported');
                     return false;
                 }
-
-                //根据日期去余切换样式
-                var date = new Date().getDate();
-                var style = date%8;
-                $('#gallery').addClass("baguetteBoxOne gallery effect-"+style);   
 
                 //获取签名
                 $.ajax({
