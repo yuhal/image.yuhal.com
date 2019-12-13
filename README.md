@@ -1,4 +1,4 @@
-# picture.yuhal.com
+# image.yuhal.com
 # 项目简介
 一个基于七牛云OSS搭建的个人相册项目，可在线预览多张图片。
 # 项目优点
