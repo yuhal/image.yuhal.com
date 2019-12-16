@@ -2,9 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" class="no-js">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <meta name="keywords" content="HaI,HaI丶Picture,Hai,Hal,个人相册,在线相册" />
-        <meta name="description" content="HaI丶Picture是一个基于七牛云OSS搭建的个人相册，可在线预览多张图片" />
-        <title>HaI丶Picture</title>
+        <meta name="keywords" content="HaI,HaI丶Image,Hai,Hal,个人相册,在线相册" />
+        <meta name="description" content="HaI丶Image是一个基于七牛云OSS搭建的个人相册，可在线预览多张图片" />
+        <title>HaI丶Image</title>
         <link rel="icon" type="image/x-icon" href="logo.ico" />
         <link rel="stylesheet" href="baguettebox.min.css"/>
         <link rel="stylesheet" href="style.css"/>
@@ -112,7 +112,7 @@
                 mobile = '15736736889',
                 timestamp=Math.round(new Date().getTime()/1000),
                 nonce = MathRand(),
-                bucket = 'yuhal-picture',
+                bucket = 'yuhal-image',
                 video = document.getElementById('video'),
                 canvas = document.getElementById('canvas'),
                 context = canvas.getContext('2d'),
@@ -262,7 +262,7 @@
                                 var sort = 0;
                                 $.each(data.data[0].items, function(i, info){
                                     sort = i+1;
-                                    href = 'https://picture.yuhal.com/'+info.key;
+                                    href = 'https://image.yuhal.com/'+info.key;
                                     html += '<li><a href="'+href+'" title="第'+sort+'张图片 '+info.key+'"><img src="'+href+'?imageMogr2/auto-orient/thumbnail/600x600!/interlace/1/blur/1x0/quality/30|imageslim"></a></li>';
                                 });  
                                 $('.gallery').append(html);  
