@@ -127,11 +127,11 @@
                 sign;
 
             //请求地址
-            var sign_url = 'https://api.yuhal.com/v1/sign/index',
-                token_url = 'https://api.yuhal.com/v1/token/token',
-                authentication_url = 'https://api.yuhal.com/v1/authentication/index',
-                put_buck_url = 'https://api.yuhal.com/v2/bucket/yuhal-temp',
-                bucket_url = 'https://api.yuhal.com/v2/bucket/'+bucket,
+            var sign_url = 'https://api.yuhal.com/oauth/sign/index',
+                token_url = 'https://api.yuhal.com/oauth/token/token',
+                authentication_url = 'https://api.yuhal.com/oauth/authentication/index',
+                put_buck_url = 'https://api.yuhal.com/v1/bucket/yuhal-temp',
+                bucket_url = 'https://api.yuhal.com/v1/listFiles',
                 face_url = 'https://api.yuhal.com/v2/face';
 
             $(function(){   
@@ -244,6 +244,7 @@
                     url: bucket_url,
                     dataType: "json",
                     data: {
+                        bucket:bucket,
                         marker:'',
                         prefix:bucket,
                         // limit:100,
