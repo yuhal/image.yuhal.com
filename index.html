@@ -80,7 +80,7 @@
             <svg width="60" height="44"><polyline points="50 30 30 10 10 30" stroke="rgba(255,255,255,0.5)" stroke-width="4" stroke-linecap="butt" fill="none" stroke-linejoin="round"></polyline></svg>
         </button>
         <div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei';">
-        <p>Powered by Qiniu and Theme by Baguettebox & AnimOnScroll © 2019 HaI</p>
+        <p>Powered by Qiniu and Theme by Baguettebox & AnimOnScroll © 2020 HaI</p>
 
         <script src="masonry.pkgd.min.js"></script> 
         <script src="imagesloaded.js"></script> 
@@ -130,7 +130,7 @@
             var sign_url = 'https://api.yuhal.com/oauth/sign/index',
                 token_url = 'https://api.yuhal.com/oauth/token/token',
                 authentication_url = 'https://api.yuhal.com/oauth/authentication/index',
-                put_buck_url = 'https://api.yuhal.com/v1/bucket/yuhal-temp',
+                put_buck_url = 'https://api.yuhal.com/v1/putFile',
                 bucket_url = 'https://api.yuhal.com/v1/listFiles',
                 face_url = 'https://api.yuhal.com/v2/face';
 
@@ -177,7 +177,7 @@
                         mobile:mobile,
                         timestamp:timestamp,
                         nonce:nonce,
-                        sign:sign,
+                        sign:sign
                     },
                     async : false,
                     success: function(data){
@@ -338,9 +338,8 @@
                     $.post({
                         url:put_buck_url,
                         data:{
-                            uri:img,
-                            authentication:authentication,
-                            _method:'put'
+                            file:img,
+                            authentication:authentication
                         },
                         success:function (callback) {
                             callback = $.parseJSON(callback)
