@@ -264,7 +264,7 @@
                                 $.each(data.data[0].items, function(i, info){
                                     sort = i+1;
                                     href = 'https://image.yuhal.com/'+info.key;
-                                    html += '<li><a href="'+href+'" title="第'+sort+'张图片 '+info.key+'"><img src="'+href+'?imageMogr2/auto-orient/gravity/Center/crop/400x400/interlace/1/blur/1x0/quality/30"></a></li>';
+                                    html += '<li><a href="'+href+'" title="第'+sort+'张图片 '+info.key+'"><img src="'+href+'"></a></li>';
                                 });  
                                 $('.gallery').append(html);  
 
