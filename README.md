@@ -10,8 +10,7 @@
 
 🚀响应式布局
 
-🐶持续更新中～欢迎star/fork
-
+🐶持续更新 ing，欢迎 star / fork
 - 我的邮箱：15736736889@163.com
 - 我的博客：https://yuhal.coding.me
 
