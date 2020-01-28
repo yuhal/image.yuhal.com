@@ -15,26 +15,26 @@
     </head>
     <body>
         <div id="app">
-        <div class="page parallel">
-            <div class="d-flex row">
-                <div class="col-md-12  height-full accent-3 align-self-center text-center" data-bg-repeat="false"
-                     data-bg-possition="center">
-                    <video  id="video" autoplay style="width:100%;height:100%;opacity: 1"></video>
-                    <!--描绘video截图-->
-                    <canvas style="display: none;" id="canvas" width="480" height="320"></canvas>
+            <div class="page parallel">
+                <div class="d-flex row">
+                    <div class="col-md-12  height-full accent-3 align-self-center text-center" data-bg-repeat="false"
+                         data-bg-possition="center">
+                        <video id="video" autoplay style="width:100%;height:100%;opacity: 1"></video>
+                        <!--描绘video截图-->
+                        <canvas style="display: none;" id="canvas" width="480" height="320"></canvas>
+                    </div>
                 </div>
             </div>
-        </div>
-        <!-- /.right-sidebar -->
-        <!-- Add the sidebar's background. This div must be placed
-                 immediately after the control sidebar -->
+            <!-- /.right-sidebar -->
+            <!-- Add the sidebar's background. This div must be placed
+                     immediately after the control sidebar -->
         </div>
         <!--/#app -->
        
         <div class="container">
           <svg class="bike" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 509.88 346.42">
             <title>自行车加载器</title>
-            <text class="loading" x="140" y="50">LOADING...</text>
+            <text class="loading" x="140" y="50">加载中...</text>
             <circle cx="381.99" cy="217.27" r="57" fill="none"/>
             <rect x="205.49" y="100.77" width="130" height="10" fill="#ffffff" stroke="#ffffff" stroke-miterlimit="10"/>
             <rect x="335.99" y="59.27" width="10" height="58.84" fill="#ffffff" stroke="#ffffff" stroke-miterlimit="10"/>
@@ -75,12 +75,14 @@
         <script src="script.js"></script>
 
         <div id="gallery" class="baguetteBoxOne gallery effect-1"> 
+          
         </div>
         <button id="return_top" class="baguetteBox-button">
             <svg width="60" height="44"><polyline points="50 30 30 10 10 30" stroke="rgba(255,255,255,0.5)" stroke-width="4" stroke-linecap="butt" fill="none" stroke-linejoin="round"></polyline></svg>
         </button>
-        <div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei';">
-        <p>Powered by Qiniu and Theme by Baguettebox & AnimOnScroll © 2020 HaI</p>
+        <div id="foot">
+            <p>Powered by Qiniu and Theme by Baguettebox & AnimOnScroll © 2020 HaI</p>
+        </div>
 
         <script src="masonry.pkgd.min.js"></script> 
         <script src="imagesloaded.js"></script> 
@@ -113,13 +115,17 @@
                 timestamp=Math.round(new Date().getTime()/1000),
                 nonce = MathRand(),
                 bucket = 'yuhal-image',
+                bucket_url = 'https://image.yuhal.com',
+                temp_bucket = 'yuhal-temp',
+                temp_bucket_url = 'http://temp.yuhal.com',
+                group_id = 'test',
                 video = document.getElementById('video'),
                 canvas = document.getElementById('canvas'),
                 context = canvas.getContext('2d'),
                 fcount = 0,
                 //人脸识别开关 本地调试设置true
-                face = true,
-                // face = getCookie('face'),
+                // face = true,
+                face = getCookie('face'),
                 mediaStreamTrack,
                 authentication,
                 accesstoken,
@@ -130,14 +136,14 @@
             var sign_url = 'https://api.yuhal.com/oauth/sign/index',
                 token_url = 'https://api.yuhal.com/oauth/token/token',
                 authentication_url = 'https://api.yuhal.com/oauth/authentication/index',
-                put_buck_url = 'https://api.yuhal.com/v1/putFile',
-                bucket_url = 'https://api.yuhal.com/v1/listFiles',
-                face_url = 'https://api.yuhal.com/v2/face';
+                put_file_url = 'https://api.yuhal.com/v1/putFile',
+                list_files_url = 'https://api.yuhal.com/v1/listFiles',
+                face_search_url = 'https://api.yuhal.com/v1/faceSearch';
 
             $(function(){   
                 var mobile_flag = isMobile(); // true为手机端，false为PC端
                 if(mobile_flag){
-                    loadMessage('Mobile Web not supported');
+                    loadMessage('不支持手机访问');
                     return false;
                 }
 
@@ -222,7 +228,8 @@
                 //不存在 则继续进行人脸识别
                 //存在 则正常访问
                 if(!face){
-                    $('.container').hide();
+                    loadMessage('无法访问摄像头');
+                    $("#app").show();
                     // 实现人脸拍照并传向后台
                     if(navigator.mediaDevices.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.getUserMedia){
                         getUserMediaToPhoto({video:{width:480,height:320}},mediaSuccess,mediaError);
@@ -241,7 +248,7 @@
                 //获取仓库下的图片
                 $.ajax({
                     type: "GET",
-                    url: bucket_url,
+                    url: list_files_url,
                     dataType: "json",
                     data: {
                         bucket:bucket,
@@ -263,7 +270,7 @@
                                 var sort = 0;
                                 $.each(data.data[0].items, function(i, info){
                                     sort = i+1;
-                                    href = 'https://image.yuhal.com/'+info.key;
+                                    href = bucket_url+'/'+info.key;
                                     html += '<li><a href="'+href+'" title="第'+sort+'张图片 '+info.key+'"><img src="'+href+'"></a></li>';
                                 });  
                                 $('.gallery').append(html);  
@@ -327,25 +334,26 @@
             //获取媒体失败回调函数
             function mediaError(error) {
                 $("#app").hide();
-                loadMessage('Failed to access user media')
                 return false;
             }
             function postFace() {
+                loadMessage('人脸识别中...');
                 setTimeout(function () {
                     context.drawImage(video,0,0,480,320);
                     img=canvas.toDataURL('image/jpg')
                     // 获取完整的base64编码,将照片以base64用ajax传到后台
                     $.post({
-                        url:put_buck_url,
+                        url:put_file_url,
                         data:{
+                            authentication:authentication,
                             file:img,
-                            authentication:authentication
+                            bucket:temp_bucket
                         },
                         success:function (callback) {
                             callback = $.parseJSON(callback)
                             if(callback.code==200){
                                 //得到上传图片去做比对
-                                faceCheck(callback.data.fileName)
+                                faceCheck(callback.data[0].key)
                                 fcount++;
                             }
                         },
@@ -356,17 +364,19 @@
                 },300)
             }
             function faceCheck(uri){
-                $.get({
-                    url:face_url,
+                $.post({
+                    url:face_search_url,
                     data:{
-                        uri:'http://pwydkeqx9.bkt.clouddn.com/'+uri,
-                        authentication:authentication
+                        authentication:authentication,
+                        uri:temp_bucket_url+'/'+uri,
+                        group_id:group_id
                     },
                     success:function (callback) {
                         callback = $.parseJSON(callback)
+                        console.log(callback)
                         if(callback.code==200){
                             var score = callback.data.info
-                            if(score>=70){
+                            if(score>=0.7){
                                 //关闭摄像头
                                 mediaStreamTrack.getTracks()[0].stop(); 
                                 $("#app").hide();
@@ -378,13 +388,13 @@
                                 //关闭摄像头
                                 mediaStreamTrack.getTracks()[0].stop();
                                 $("#app").hide();
-                                loadMessage('Failed to face recognition');
+                                loadMessage('未识别成功，刷新屏幕重试');
                             }
                         }else{
                             //关闭摄像头
                             mediaStreamTrack.getTracks()[0].stop();
                             $("#app").hide();
-                            loadMessage('Failed to face recognition');
+                            loadMessage('未识别成功，刷新屏幕重试');
                         }
                     },
                     error:function (callback) {

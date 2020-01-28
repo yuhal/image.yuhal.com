@@ -10,10 +10,13 @@ a, a:visited {
     text-decoration: none;
 }
 
-h1, h2, h3 .gallery {
+h1, h2, h3 .gallery{
     text-align: center;
 }
 
+#video, #canvas, #app, .gallery{
+    display: none;
+}
 
 .gallery li {
     list-style: none;
@@ -256,22 +259,27 @@ h1, h2, h3 .gallery {
   justify-content: center;
   align-items: center;
   width: 100vw;
-  height: 100vh;
+  /*height: 100vh;*/
 }
 .bike {
   visibility: hidden;
   width: 500px;
-  height: 500px;
+  height: 650px;
 }
 .loading {
   font-size: 24px;
   letter-spacing: 1px;
 }
-#return_top{
+#return_top {
     width:60px; 
     height:44px;
     position:fixed; 
     right:25px; 
     bottom:10px; 
     display:none; 
+}
+#foot {
+    /*position: absolute;*/
+    text-align:center;margin:1px 0;
+    font:normal 14px/24px 'MicroSoft YaHei';
 }
