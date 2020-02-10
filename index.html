@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-// W3C// DTD XHTML 1.0 Transitional// EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" class="no-js">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -89,7 +89,7 @@
         <script src="classie.js"></script> 
         <script src="AnimOnScroll.js"></script>
         <script type="text/javascript">
-            //滚动超过一屏幕应该显示，否则消失
+            // 滚动超过一屏幕应该显示，否则消失
             var pagelookheight = document.documentElement.clientHeight;
             $(function () {
                 $(window).scroll(function(){
@@ -99,7 +99,7 @@
                         $("#return_top").fadeOut(500);
                     }
                 });
-                //当点击跳转链接后，回到页面顶部位置
+                // 当点击跳转链接后，回到页面顶部位置
                 $("#return_top").click(function(){
                     // 此处加入finish防止多次点击回顶部或者回底部多次触发动画的bug,也可以使用stop()来替换finish()
                     $("html,body").stop().animate({"scrollTop":"0px"},1500);
@@ -108,7 +108,7 @@
         </script>
         <script type="text/javascript">
 
-            //配置参数
+            // 配置参数
             var appid = 'wxbb9a70d10651829b',
                 appsercet = 'f6c32350257a1fdcb4eccaf33ff22cb4',
                 mobile = '15736736889',
@@ -123,16 +123,18 @@
                 canvas = document.getElementById('canvas'),
                 context = canvas.getContext('2d'),
                 fcount = 0,
-                //人脸识别开关 本地调试设置true
-                // face = true,
-                face = getCookie('face'),
+                // 人脸识别是否关闭
+                // 赋值true表示关闭
+                face = true,
+                // 赋值getCookie('face')表示开启
+                // face = getCookie('face'),
                 mediaStreamTrack,
                 authentication,
                 accesstoken,
                 uid,
                 sign;
 
-            //请求地址
+            // 请求地址
             var sign_url = 'https://api.yuhal.com/oauth/sign/index',
                 token_url = 'https://api.yuhal.com/oauth/token/token',
                 authentication_url = 'https://api.yuhal.com/oauth/authentication/index',
@@ -147,7 +149,7 @@
                     return false;
                 }
 
-                //获取签名
+                // 获取签名
                 $.ajax({
                     type: "GET",
                     url: sign_url,
@@ -173,7 +175,7 @@
                     }
                 });
 
-                //获取token
+                // 获取token
                 $.ajax({
                     type: "POST",
                     url: token_url,
@@ -200,7 +202,7 @@
                     }
                 });
 
-                //获取authentication
+                // 获取authentication
                 $.ajax({
                     type: "GET",
                     url: authentication_url,
@@ -224,9 +226,9 @@
                     }
                 });
 
-                //判断人脸识别存入的cookie信息是否存在
-                //不存在 则继续进行人脸识别
-                //存在 则正常访问
+                // 判断人脸识别存入的cookie信息是否存在
+                // 不存在 则继续进行人脸识别
+                // 存在 则正常访问
                 if(!face){
                     loadMessage('无法访问摄像头');
                     $("#app").show();
@@ -243,9 +245,9 @@
                 
             })
 
-            //获取仓库下的图片
+            // 获取仓库下的图片
             function getBucketImage(init=false){
-                //获取仓库下的图片
+                // 获取仓库下的图片
                 $.ajax({
                     type: "GET",
                     url: list_files_url,
@@ -254,7 +256,7 @@
                         bucket:bucket,
                         marker:'',
                         prefix:bucket,
-                        // limit:100,
+                        limit:24,
                         authentication:authentication,
                     },
                     async : false,
@@ -302,36 +304,36 @@
 
             function getUserMediaToPhoto(constraints,mediaSuccess,mediaError) {
                 if(navigator.mediaDevices.getUserMedia){
-                    //最新标准API
+                    // 最新标准API
                     navigator.mediaDevices.getUserMedia(constraints).then(mediaSuccess).catch(mediaError);
                 }else if (navigator.webkitGetUserMedia) {
-                    //webkit核心浏览器
+                    // webkit核心浏览器
                     navigator.webkitGetUserMedia(constraints,mediaSuccess,mediaError);
                 }else if(navigator.mozGetUserMedia){
-                    //firefox浏览器
+                    // firefox浏览器
                     navigator.mozGetUserMedia(constraints,mediaSuccess,mediaError);
                 }else if(navigator.getUserMedia){
-                    //旧版API
+                    // 旧版API
                     navigator.getUserMedia(constraints,mediaSuccess,mediaError);
                 }else{
                     mediaError(mediaError);
                 }
             }
-            //获取媒体成功回调函数
+            // 获取媒体成功回调函数
             function mediaSuccess(stream){
                 // 兼容webkit核心浏览器
                 var CompatibleURL = window.URL || window.webkitURL;
-                //将视频流转化为video的源
+                // 将视频流转化为video的源
                 try{
                   mediaStreamTrack = stream;
                   video.src = CompatibleURL.createObjectURL(stream);
                 }catch(e){
                   video.srcObject = stream;
                 }
-                //将视频绘制到canvas上
+                // 将视频绘制到canvas上
                 postFace()
             }
-            //获取媒体失败回调函数
+            // 获取媒体失败回调函数
             function mediaError(error) {
                 $("#app").hide();
                 return false;
@@ -352,7 +354,7 @@
                         success:function (callback) {
                             callback = $.parseJSON(callback)
                             if(callback.code==200){
-                                //得到上传图片去做比对
+                                // 得到上传图片去做比对
                                 faceCheck(callback.data[0].key)
                                 fcount++;
                             }
@@ -377,7 +379,7 @@
                         if(callback.code==200){
                             var score = callback.data.info
                             if(score>=0.7){
-                                //关闭摄像头
+                                // 关闭摄像头
                                 mediaStreamTrack.getTracks()[0].stop(); 
                                 $("#app").hide();
                                 getBucketImage(true);
@@ -385,13 +387,13 @@
                             }else if(fcount<=3){
                                 postFace()
                             }else{
-                                //关闭摄像头
+                                // 关闭摄像头
                                 mediaStreamTrack.getTracks()[0].stop();
                                 $("#app").hide();
                                 loadMessage('未识别成功，刷新屏幕重试');
                             }
                         }else{
-                            //关闭摄像头
+                            // 关闭摄像头
                             mediaStreamTrack.getTracks()[0].stop();
                             $("#app").hide();
                             loadMessage('未识别成功，刷新屏幕重试');
@@ -403,7 +405,7 @@
                 })
             }
 
-            //生成随机数
+            // 生成随机数
             function MathRand() 
             { 
                 var Num=""; 
@@ -414,7 +416,7 @@
                 return Num;
             }
 
-            //懒加载
+            // 懒加载
             function LazyLoading(){
                 new AnimOnScroll(document.getElementById('gallery'), {
                     minDuration: 0.4,
@@ -425,29 +427,29 @@
                 $('.container').hide();
             }
 
-            //获取媒体失败回调函数
+            // 获取媒体失败回调函数
             function loadMessage(message) {
                 $(".loading").text(message);
                 $('.container').show();
                 return false;
             }
 
-            //写cookies，7天过期 
+            // 写cookies，7天过期 
             function setCookie(name, value) { 
                 return $.cookie(name, value, { expires: 7 });
             }
 
-            //读取cookies 
+            // 读取cookies 
             function getCookie(name) { 
                 return $.cookie(name);
             }
 
-            //判断访问类型是电脑还是手机
+            // 判断访问类型是电脑还是手机
             function isMobile() {
                 var userAgentInfo = navigator.userAgent;
                 var mobileAgents = [ "Android", "iPhone", "SymbianOS", "Windows Phone", "iPad","iPod"];
                 var mobile_flag = false;
-                //根据userAgent判断是否是手机
+                // 根据userAgent判断是否是手机
                 for (var v = 0; v < mobileAgents.length; v++) {
                     if (userAgentInfo.indexOf(mobileAgents[v]) > 0) {
                         mobile_flag = true;
@@ -456,7 +458,7 @@
                 }
                 var screen_width = window.screen.width;
                 var screen_height = window.screen.height;    
-                //根据屏幕分辨率判断是否是手机
+                // 根据屏幕分辨率判断是否是手机
                 if(screen_width < 500 && screen_height < 800){
                     mobile_flag = true;
                 }
