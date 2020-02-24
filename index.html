@@ -143,6 +143,7 @@
                 face_search_url = 'https://api.yuhal.com/v1/faceSearch';
 
             $(function(){   
+                
                 var mobile_flag = isMobile(); // true为手机端，false为PC端
                 if(mobile_flag){
                     loadMessage('不支持手机访问');
@@ -241,12 +242,45 @@
                 }else{
                     $("#app").hide();
                     getBucketImage();
+                    setTimeout(function () {
+                        start(true)
+                    },500)
+                    LazyLoading();
                 }
                 
             })
 
+            $(window).on('scroll', function(){
+                start()
+            })
+
+            function start(init=false){
+                //.not('[data-isLoaded]')选中已加载的图片不需要重新加载
+                $('#gallery img').not('[data-isLoaded]').each(function(){
+                    var $node = $(this)
+                    if( isShow($node) ){
+                        loadImg($node)
+                    }else if(init == true){
+                        loadImg($node)
+                    }
+                })
+            }
+
+            //判断一个元素是不是出现在窗口(视野)
+            function isShow($node){
+                return $node.offset().top < $(window).height() + $(window).scrollTop()
+            }
+            //加载图片
+            function loadImg($img){
+                console.log(1)
+                //.attr(值)
+                //.attr(属性名称,值)
+                $img.attr('src', $img.attr('data-src')) //把data-src的值 赋值给src
+                $img.attr('data-isLoaded', 1)//已加载的图片做标记
+            }
+
             // 获取仓库下的图片
-            function getBucketImage(init=false){
+            function getBucketImage(){
                 // 获取仓库下的图片
                 $.ajax({
                     type: "GET",
@@ -273,17 +307,9 @@
                                 $.each(data.data[0].items, function(i, info){
                                     sort = i+1;
                                     href = bucket_url+'/'+info.key;
-                                    html += '<li><a href="'+href+'" title="第'+sort+'张图片 '+info.key+'"><img src="'+href+'"></a></li>';
+                                    html += '<li><a href="'+href+'" title="第'+sort+'张图片 '+info.key+'"><img data-src="'+href+'" src="default.png"></a></li>';
                                 });  
                                 $('.gallery').append(html);  
-
-                                var init_time = 500;
-                                if(init){
-                                    init_time = sort*6;
-                                }
-                                setTimeout(function () {
-                                    LazyLoading();  
-                                },init_time)
                             }else{
                                 html = '<center>暂无图片!</center>';
                                 $('.gallery').html(html);
@@ -382,7 +408,7 @@
                                 // 关闭摄像头
                                 mediaStreamTrack.getTracks()[0].stop(); 
                                 $("#app").hide();
-                                getBucketImage(true);
+                                getBucketImage();
                                 setCookie('face',true);
                             }else if(fcount<=3){
                                 postFace()
